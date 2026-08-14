@@ -30,18 +30,9 @@
             </feature>
         </config-file>
 
-        <!-- Deep Link Redirect Scheme (clerk://...) for Hosted Auth & SSO targeting MainActivity -->
-        <config-file target="AndroidManifest.xml" parent="/manifest/application/activity[@android:name='MainActivity']">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="clerk" />
-            </intent-filter>
-        </config-file>
-
-        <!-- Source File Mappings (Pure Java Native Plugin Execution) -->
-        <source-file src="src/android/ClerkPlugin.java" target-dir="src/com/outsystems/plugin/clerk" />
+        <!-- Source File Mappings (Kotlin Native Execution) -->
+        <source-file src="src/android/ClerkPlugin.kt" target-dir="src/com/outsystems/plugin/clerk" />
+        <source-file src="src/android/ClerkBridge.kt" target-dir="src/com/outsystems/plugin/clerk" />
 
         <!-- OutSystems MAB Gradle Build Extras for Clerk Dependencies & Maven Repositories -->
         <framework src="src/android/build-extras.gradle" custom="true" type="gradleReference" />
