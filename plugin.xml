@@ -27,12 +27,11 @@
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="ClerkPlugin">
                 <param name="android-package" value="com.outsystems.plugin.clerk.ClerkPlugin" />
-                <param name="onload" value="true" />
             </feature>
         </config-file>
 
         <!-- Deep Link Redirect Scheme (clerk://...) for Hosted Auth & SSO -->
-        <config-file target="AndroidManifest.xml" parent="/manifest/application/activity[@android:name='MainActivity']">
+        <config-file target="AndroidManifest.xml" parent="/manifest/application/activity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />

@@ -15,6 +15,7 @@ import org.json.JSONObject
 /**
  * Kotlin Helper Bridge for Clerk Android SDK.
  * Manages Kotlin Coroutines scopes and converts suspending SDK calls into Java callbacks.
+ * Uses lazy scope creation to avoid Main Looper initialization crashes on splash screen launch.
  */
 object ClerkBridge {
 
@@ -28,7 +29,7 @@ object ClerkBridge {
         fun onError(errorMessage: String)
     }
 
-    private val scope = CoroutineScope(Dispatchers.Main)
+    private val scope by lazy { CoroutineScope(Dispatchers.Main) }
     private var isInitialized = false
 
     /**
