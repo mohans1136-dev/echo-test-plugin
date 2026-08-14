@@ -1,6 +1,6 @@
 # Clerk Cordova Plugin for OutSystems (Shared Session Sync)
 
-This plugin wraps the official **Clerk Android SDK** (`com.clerk:clerk-android-api`) for **OutSystems Native Mobile Applications**, featuring **Java-friendly architecture** and **Shared Session Synchronization** between sibling applications (`Clerk_App_1` & `Clerk_App_2`).
+This plugin wraps the official **Clerk Android SDK** (`com.clerk:clerk-android-api:1.0.35`) for **OutSystems Native Mobile Applications**, featuring **Java-friendly architecture** and **Shared Session Synchronization** between sibling applications (`Clerk_App_1` & `Clerk_App_2`).
 
 ---
 
@@ -146,7 +146,7 @@ In your OutSystems Mobile App module property **Extensibility Configurations**:
 ```javascript
 if (typeof cordova !== 'undefined' && cordova.plugins && cordova.plugins.clerk) {
     cordova.plugins.clerk.initialize($parameters.PublishableKey)
-        .then(function(res) {
+        .then(function() {
             return cordova.plugins.clerk.getSessionState();
         })
         .then(function(state) {
@@ -208,10 +208,10 @@ if (typeof cordova !== 'undefined' && cordova.plugins && cordova.plugins.clerk) 
 
 ## 🔐 How Shared Session Sync Works Between `ClerkApp1` & `ClerkApp2`
 
-1. User logs into **`ClerkApp1`** using `Clerk_SignIn`.
-2. When the user opens **`ClerkApp2`**, `Clerk_Initialize` runs automatically on app launch.
-3. The Clerk Android SDK detects the shared session stored under certificate `65:2...7:47`.
-4. `getSessionState()` returns `isAuthenticated: true` in **`ClerkApp2`** without asking the user to log in again!
+1. User logs into **`ClerkApp1`** (`org.luvelo.dev.ClerkApp1`) via `cordova.plugins.clerk.signIn()`.
+2. When the user opens **`ClerkApp2`** (`org.luvelo.dev.ClerkApp2`), `clerk.initialize()` runs on app startup.
+3. The Clerk Android SDK detects the active session stored under certificate `65:2...7:47`.
+4. `getSessionState()` returns `isAuthenticated: true` in **`ClerkApp2`** without requiring the user to sign in again!
 
 ---
 
