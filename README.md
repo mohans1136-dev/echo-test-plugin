@@ -20,9 +20,9 @@ This plugin wraps the official **Clerk Android SDK** (`com.clerk:clerk-android-a
                              │ (cordova.exec)
                              ▼
 ┌─────────────────────────────────────────────────────────┐
-│          Java Cordova Plugin (ClerkPlugin.java)         │
+│          Java/Kotlin Plugin (ClerkPlugin.kt)            │
 │  • Manages Cordova lifecycle & onNewIntent() callbacks │
-│  • Exposes pure Java interface to OutSystems            │
+│  • Exposes pure Java/Kotlin interface to OutSystems     │
 └────────────────────────────┬────────────────────────────┘
                              │
                              ▼
@@ -111,39 +111,17 @@ cordova.plugins.clerk.getSessionState()
 
 ---
 
-## 🛠 OutSystems Mobile Integration Guide
+## 🛠 OutSystems Mobile Lifecycle Best Practices
 
-### Step 1: Configure Service Studio Extensibility Configurations
+### ⚠️ CRITICAL: Do NOT Call `Clerk_Initialize` inside Screen `OnInitialize`!
 
-In your OutSystems Mobile App module property **Extensibility Configurations**:
+In OutSystems Mobile, the **`OnInitialize`** event runs **before the screen renders**. If an asynchronous JavaScript action (using `$resolve()`) is placed in `OnInitialize`, OutSystems **blocks screen rendering and holds the splash screen** until the promise resolves. Because `Clerk.initialize` performs network/session setup, placing it in `OnInitialize` freezes the splash screen.
 
-```json
-{
-    "plugin": {
-        "url": "https://github.com/mohans1136-dev/echo-test-plugin#main",
-        "variables": [
-            {
-                "name": "GRADLEPLUGINKOTLINENABLED",
-                "value": "true" 
-            },
-            {
-                "name": "GRADLEPLUGINKOTLINVERSION",
-                "value": "1.9.20" 
-            }
-        ]
-    }
-}
-```
+#### ✅ Recommended Placement: Screen `OnReady` or Action Trigger
+Call `Clerk_Initialize` inside the **Screen `OnReady`** event (which fires *after* the splash screen closes and screen renders) or when the user interacts with the app.
 
-### Step 2: Ensure OutSystems App Identifier Matches Clerk Dashboard
-
-1. **`Clerk_App_1`**: In Service Studio, set App Identifier to `org.luvelo.dev.ClerkApp1`.
-2. **`Clerk_App_2`**: In Service Studio, set App Identifier to `org.luvelo.dev.ClerkApp2`.
-
-### Step 3: OutSystems Client Actions (JavaScript Elements)
-
-#### Action `Clerk_Initialize` (Call on Application Ready / Screen OnInitialize)
 ```javascript
+// JavaScript Action: Clerk_Initialize (In Screen OnReady)
 if (typeof cordova !== 'undefined' && cordova.plugins && cordova.plugins.clerk) {
     cordova.plugins.clerk.initialize($parameters.PublishableKey)
         .then(function() {
@@ -157,49 +135,12 @@ if (typeof cordova !== 'undefined' && cordova.plugins && cordova.plugins.clerk) 
         })
         .catch(function(err) {
             $parameters.IsAuthenticated = false;
-            $parameters.ErrorMessage = "Clerk Init Error: " + (err.message || err);
-            $resolve();
-        });
-} else {
-    $parameters.IsAuthenticated = false;
-    $parameters.ErrorMessage = "Clerk Plugin not loaded (Running in browser)";
-    $resolve();
-}
-```
-
-#### Action `Clerk_SignIn`
-```javascript
-if (typeof cordova !== 'undefined' && cordova.plugins && cordova.plugins.clerk) {
-    cordova.plugins.clerk.signIn()
-        .then(function(userSession) {
-            $parameters.UserId = userSession.userId;
-            $parameters.Email = userSession.email;
-            $resolve();
-        })
-        .catch(function(err) {
             $parameters.ErrorMessage = err.message || err;
             $resolve();
         });
 } else {
-    $parameters.ErrorMessage = "Plugin not loaded";
-    $resolve();
-}
-```
-
-#### Action `Clerk_SignOut`
-```javascript
-if (typeof cordova !== 'undefined' && cordova.plugins && cordova.plugins.clerk) {
-    cordova.plugins.clerk.signOut()
-        .then(function() {
-            $parameters.Success = true;
-            $resolve();
-        })
-        .catch(function(err) {
-            $parameters.Success = false;
-            $resolve();
-        });
-} else {
-    $parameters.Success = false;
+    $parameters.IsAuthenticated = false;
+    $parameters.ErrorMessage = "Running in browser";
     $resolve();
 }
 ```
@@ -209,7 +150,7 @@ if (typeof cordova !== 'undefined' && cordova.plugins && cordova.plugins.clerk) 
 ## 🔐 How Shared Session Sync Works Between `ClerkApp1` & `ClerkApp2`
 
 1. User logs into **`ClerkApp1`** (`org.luvelo.dev.ClerkApp1`) via `cordova.plugins.clerk.signIn()`.
-2. When the user opens **`ClerkApp2`** (`org.luvelo.dev.ClerkApp2`), `clerk.initialize()` runs on app startup.
+2. When the user opens **`ClerkApp2`** (`org.luvelo.dev.ClerkApp2`), `clerk.initialize()` runs on `OnReady`.
 3. The Clerk Android SDK detects the active session stored under certificate `65:2...7:47`.
 4. `getSessionState()` returns `isAuthenticated: true` in **`ClerkApp2`** without requiring the user to sign in again!
 
