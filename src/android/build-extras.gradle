@@ -6,7 +6,7 @@ repositories {
 ext.postBuildExtras = {
     android {
         defaultConfig {
-            minSdkVersion 24
+            minSdkVersion 28
         }
         sourceSets {
             main {

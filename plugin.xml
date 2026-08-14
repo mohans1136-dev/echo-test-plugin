@@ -21,6 +21,7 @@
         <preference name="GradlePluginKotlinEnabled" value="true" default="true" />
         <preference name="GradlePluginKotlinCodeStyle" value="official" default="official" />
         <preference name="GradlePluginKotlinVersion" value="1.9.20" default="1.9.20" />
+        <preference name="android-minSdkVersion" value="28" default="28" />
 
         <!-- Register Native Plugin Feature in config.xml -->
         <config-file target="res/xml/config.xml" parent="/*">
