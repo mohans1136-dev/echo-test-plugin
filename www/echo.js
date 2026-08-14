@@ -12,11 +12,8 @@ var Echo = {
      * @param {function} errorCallback - Error callback returning an error message.
      */
     echo: function (message, successCallback, errorCallback) {
-        if (typeof message !== 'string') {
-            if (errorCallback) errorCallback('Invalid argument: message must be a string');
-            return;
-        }
-        exec(successCallback, errorCallback, 'Echo', 'echo', [message]);
+        var msg = typeof message === 'string' ? message : String(message || '');
+        exec(successCallback, errorCallback, 'Echo', 'echo', [msg]);
     },
 
     /**
@@ -28,8 +25,9 @@ var Echo = {
      * @param {function} errorCallback - Error callback.
      */
     echoAsync: function (message, delayMs, successCallback, errorCallback) {
+        var msg = typeof message === 'string' ? message : String(message || '');
         var delay = typeof delayMs === 'number' ? delayMs : 1000;
-        exec(successCallback, errorCallback, 'Echo', 'echoAsync', [message, delay]);
+        exec(successCallback, errorCallback, 'Echo', 'echoAsync', [msg, delay]);
     },
 
     /**
@@ -39,12 +37,19 @@ var Echo = {
      * @returns {Promise<string>} Resolves with the echoed message.
      */
     echoPromise: function (message) {
+        var msg = typeof message === 'string' ? message : String(message || '');
         return new Promise(function (resolve, reject) {
-            if (typeof message !== 'string') {
-                reject(new Error('Invalid argument: message must be a string'));
-                return;
-            }
-            exec(resolve, reject, 'Echo', 'echo', [message]);
+            exec(
+                function (response) {
+                    resolve(response);
+                },
+                function (error) {
+                    reject(typeof error === 'string' ? new Error(error) : error);
+                },
+                'Echo',
+                'echo',
+                [msg]
+            );
         });
     }
 };

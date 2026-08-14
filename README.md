@@ -6,7 +6,7 @@ This plugin is a recreation and enhancement of the tutorial **"Creating a Cordov
 
 ## 🔍 Background & Architecture
 
-Starting with **Cordova-Android 9.0.0**, Apache Cordova natively supports Kotlin without requiring third-party hook scripts or Gradle workarounds. OutSystems Mobile App Builder (MAB) uses standard Cordova Android under the hood, making Kotlin fully compatible.
+Starting with **Cordova-Android 9.0.0**, Apache Cordova natively supports Kotlin without requiring third-party hook scripts or Gradle workarounds. OutSystems Mobile App Builder (MAB) uses standard Cordova Android under the hood, making Kotlin fully compatible when Gradle source directories and Kotlin stdlib are configured via `build-extras.gradle`.
 
 ### Plugin Directory Structure
 ```text
@@ -18,7 +18,8 @@ echo-test-plugin/
 │   └── echo.js                # JavaScript bridge (Callbacks & Promises)
 └── src/
     └── android/
-        └── Echo.kt            # Native Kotlin implementation
+        ├── Echo.kt            # Native Kotlin implementation
+        └── build-extras.gradle# Gradle extras for Kotlin stdlib & source directory mapping
 ```
 
 ---
@@ -70,57 +71,41 @@ cordova.plugins.echo.echoPromise("Promise Echo")
 
 ## 🛠 OutSystems Mobile Integration Guide
 
-Follow these steps to integrate this Kotlin plugin into OutSystems Service Studio:
-
-### Step 1: Host the Plugin Repository
-Push this directory to a public or private Git repository (e.g., GitHub, GitLab, Bitbucket):
+### Step 1: Push Plugin Updates to GitHub
 ```bash
-git init
 git add .
-git commit -m "Initial commit of Kotlin Cordova Echo Plugin"
-git remote add origin https://github.com/YOUR_USERNAME/echo-test-plugin.git
-git push -u origin main
+git commit -m "Update Kotlin plugin with build-extras.gradle for OutSystems"
+git push origin main
 ```
-
-*(Alternatively, you can compress this folder into a `.zip` file hosted on an accessible URL or Amazon S3).*
 
 ### Step 2: Configure Extensibility Configurations in OutSystems
-1. Open your OutSystems Mobile Application module in **Service Studio**.
-2. Select the main module in the logic tree and open the **Extensibility Configurations** property.
-3. Add the following JSON snippet (replace with your repository URL):
+In Service Studio, update **Extensibility Configurations**:
 
 ```json
 {
     "plugin": {
-        "url": "https://github.com/YOUR_USERNAME/echo-test-plugin.git#v1.0.0"
+        "url": "https://github.com/mohans1136-dev/echo-test-plugin#main",
+        "variables": [
+            {
+                "name": "GRADLEPLUGINKOTLINENABLED",
+                "value": "true" 
+            },
+            {
+                "name": "GRADLEPLUGINKOTLINCODESTYLE",
+                "value": "official" 
+            },
+            {
+                "name": "GRADLEPLUGINKOTLINVERSION",
+                "value": "1.9.0" 
+            }
+        ]
     }
 }
 ```
 
-*(If using a ZIP file directly)*:
-```json
-{
-    "plugin": {
-        "url": "https://your-domain.com/plugins/echo-test-plugin.zip"
-    }
-}
-```
+### Step 3: OutSystems JavaScript Element (Client Action)
 
-### Step 3: Create OutSystems Client Action Wrappers
-
-In Service Studio, create a Client Action named `Echo_CheckPlugin`:
-
-```javascript
-// JavaScript element inside Client Action
-$parameters.IsLoaded = (typeof window.cordova !== 'undefined' && 
-                        typeof window.cordova.plugins !== 'undefined' && 
-                        typeof window.cordova.plugins.echo !== 'undefined');
-```
-
-Create a Client Action named `Echo_SendMessage`:
-* Input Parameter: `Message` (Text)
-* Output Parameter: `EchoedMessage` (Text)
-* JavaScript element code:
+When creating a JavaScript element in an OutSystems Client Action, **you MUST ensure `$resolve()` is called in all execution branches** (including `else` and `.catch()`). If `$resolve()` is skipped, OutSystems will wait indefinitely and freeze the action!
 
 ```javascript
 if (typeof cordova !== 'undefined' && cordova.plugins && cordova.plugins.echo) {
@@ -130,20 +115,18 @@ if (typeof cordova !== 'undefined' && cordova.plugins && cordova.plugins.echo) {
             $resolve();
         })
         .catch(function(err) {
-            $parameters.EchoedMessage = "";
-            $reject(err);
+            $parameters.EchoedMessage = "Kotlin Error: " + (err.message || err);
+            $resolve(); // Call $resolve() to allow OutSystems flow to proceed
         });
 } else {
-    $parameters.EchoedMessage = "Plugin not loaded (running in web browser)";
-    $resolve();
+    $parameters.EchoedMessage = "Plugin not loaded / Running in Web Browser";
+    $resolve(); // CRITICAL: Always call $resolve() in else branch!
 }
 ```
 
 ---
 
 ## 🧪 Local Testing with Cordova CLI
-
-You can test this plugin in a standard Cordova app:
 
 ```bash
 # 1. Create test project
@@ -153,7 +136,7 @@ cd test-app
 # 2. Add Android platform
 cordova platform add android@10
 
-# 3. Add your local Kotlin plugin
+# 3. Add local Kotlin plugin
 cordova plugin add ../echo-test-plugin
 
 # 4. Build and run

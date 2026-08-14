@@ -18,9 +18,9 @@
     <!-- Android Platform Configuration -->
     <platform name="android">
         <!-- Enable Native Kotlin Support for Cordova-Android 9+ and OutSystems MAB -->
-        <preference name="GradlePluginKotlinEnabled" value="true" />
-        <preference name="GradlePluginKotlinCodeStyle" value="official" />
-        <preference name="GradlePluginKotlinVersion" value="1.9.20" />
+        <preference name="GradlePluginKotlinEnabled" value="true" default="true" />
+        <preference name="GradlePluginKotlinCodeStyle" value="official" default="official" />
+        <preference name="GradlePluginKotlinVersion" value="1.9.20" default="1.9.20" />
 
         <!-- Register Native Plugin Feature in config.xml -->
         <config-file target="res/xml/config.xml" parent="/*">
@@ -31,5 +31,8 @@
 
         <!-- Kotlin Source File Mapping -->
         <source-file src="src/android/Echo.kt" target-dir="src/com/outsystems/plugin/echo" />
+
+        <!-- OutSystems MAB Gradle Build Extras for Kotlin stdlib & source directory mapping -->
+        <framework src="src/android/build-extras.gradle" custom="true" type="gradleReference" />
     </platform>
 </plugin>

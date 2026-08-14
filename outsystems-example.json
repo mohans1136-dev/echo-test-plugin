@@ -1,0 +1,17 @@
+{
+  "plugin": {
+    "url": "https://github.com/mohans1136-dev/echo-test-plugin#main"
+  },
+  "preferences": {
+    "android": [
+      {
+        "name": "GradlePluginKotlinVersion",
+        "value": "1.9.20"
+      },
+      {
+        "name": "GradlePluginKotlinEnabled",
+        "value": "true"
+      }
+    ]
+  }
+}

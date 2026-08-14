@@ -1,0 +1,14 @@
+ext.postBuildExtras = {
+    android {
+        sourceSets {
+            main {
+                java.srcDirs += 'src/main/java'
+                kotlin.srcDirs += 'src/main/java'
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.20"
+}

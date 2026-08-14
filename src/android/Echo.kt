@@ -2,14 +2,12 @@ package com.outsystems.plugin.echo
 
 import org.apache.cordova.CallbackContext
 import org.apache.cordova.CordovaPlugin
-import org.apache.cordova.PluginResult
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
 /**
- * Echo Cordova Plugin written in Kotlin.
- * Fully compatible with Cordova Android 9+ and OutSystems Mobile App Builder (MAB).
+ * Echo Cordova Plugin written in Kotlin for OutSystems Mobile App Builder (MAB).
  */
 class Echo : CordovaPlugin() {
 
@@ -33,29 +31,23 @@ class Echo : CordovaPlugin() {
     }
 
     /**
-     * Echoes the string passed in the first parameter.
+     * Synchronously echoes the input string message back to JavaScript.
      */
     private fun echo(args: JSONArray, callbackContext: CallbackContext) {
         try {
-            val message = if (!args.isNull(0)) args.getString(0) else null
-
-            if (!message.isNullOrEmpty()) {
-                val result = PluginResult(PluginResult.Status.OK, message)
-                callbackContext.sendPluginResult(result)
+            val message = if (!args.isNull(0)) args.getString(0) else ""
+            if (message.isNotEmpty()) {
+                callbackContext.success(message)
             } else {
-                val result = PluginResult(
-                    PluginResult.Status.ERROR,
-                    "Expected a non-empty string argument."
-                )
-                callbackContext.sendPluginResult(result)
+                callbackContext.error("Expected a non-empty string argument.")
             }
         } catch (e: Exception) {
-            callbackContext.error("Failed to execute echo: ${e.localizedMessage}")
+            callbackContext.error("Kotlin Echo Error: ${e.localizedMessage}")
         }
     }
 
     /**
-     * Demonstrates asynchronous task execution on Kotlin thread pool.
+     * Asynchronously echoes message back on Kotlin thread pool with simulated delay.
      */
     private fun echoAsync(args: JSONArray, callbackContext: CallbackContext) {
         val message = if (!args.isNull(0)) args.getString(0) else ""
@@ -76,7 +68,7 @@ class Echo : CordovaPlugin() {
 
                 callbackContext.success(jsonResponse)
             } catch (e: Exception) {
-                callbackContext.error("Error executing echoAsync: ${e.localizedMessage}")
+                callbackContext.error("Kotlin Async Error: ${e.localizedMessage}")
             }
         }
     }
