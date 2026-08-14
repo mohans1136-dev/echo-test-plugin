@@ -1,0 +1,24 @@
+{
+  "name": "echo-test-plugin",
+  "version": "1.0.0",
+  "description": "Cordova Android Echo Plugin written in Kotlin for Cordova and OutSystems Mobile Applications",
+  "cordova": {
+    "id": "echo-test-plugin",
+    "platforms": [
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/example/echo-test-plugin.git"
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "kotlin",
+    "outsystems",
+    "echo"
+  ],
+  "author": "Luvelo",
+  "license": "Apache-2.0"
+}

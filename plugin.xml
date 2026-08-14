@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        id="echo-test-plugin"
+        version="1.0.0">
+
+    <name>EchoTestPlugin</name>
+    <description>Cordova Android Plugin written in Kotlin for Cordova and OutSystems Mobile Apps</description>
+    <license>Apache-2.0</license>
+    <keywords>cordova,kotlin,android,outsystems,echo</keywords>
+
+    <!-- JavaScript Bridge Definition -->
+    <js-module src="www/echo.js" name="Echo">
+        <clobbers target="cordova.plugins.echo" />
+        <clobbers target="window.echo" />
+    </js-module>
+
+    <!-- Android Platform Configuration -->
+    <platform name="android">
+        <!-- Enable Native Kotlin Support for Cordova-Android 9+ and OutSystems MAB -->
+        <preference name="GradlePluginKotlinEnabled" value="true" />
+        <preference name="GradlePluginKotlinCodeStyle" value="official" />
+        <preference name="GradlePluginKotlinVersion" value="1.9.20" />
+
+        <!-- Register Native Plugin Feature in config.xml -->
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="Echo">
+                <param name="android-package" value="com.outsystems.plugin.echo.Echo" />
+            </feature>
+        </config-file>
+
+        <!-- Kotlin Source File Mapping -->
+        <source-file src="src/android/Echo.kt" target-dir="src/com/outsystems/plugin/echo" />
+    </platform>
+</plugin>
