@@ -1,32 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        id="echo-test-plugin"
+        id="cordova-plugin-clerk"
         version="1.0.0">
 
-    <name>EchoTestPlugin</name>
-    <description>Cordova Android Plugin for Cordova and OutSystems Mobile Apps</description>
+    <name>ClerkPlugin</name>
+    <description>Cordova Android Plugin wrapping Clerk SDK with Shared Session Synchronization for OutSystems</description>
     <license>Apache-2.0</license>
-    <keywords>cordova,android,outsystems,echo</keywords>
+    <keywords>cordova,clerk,authentication,outsystems,shared-session</keywords>
 
     <!-- JavaScript Bridge Definition -->
-    <js-module src="www/echo.js" name="Echo">
-        <clobbers target="cordova.plugins.echo" />
-        <clobbers target="window.echo" />
+    <js-module src="www/clerk.js" name="ClerkPlugin">
+        <clobbers target="cordova.plugins.clerk" />
+        <clobbers target="window.clerk" />
     </js-module>
 
     <!-- Android Platform Configuration -->
     <platform name="android">
+        <!-- Enable Native Kotlin Support for Cordova-Android 9+ and OutSystems MAB -->
+        <preference name="GradlePluginKotlinEnabled" value="true" default="true" />
+        <preference name="GradlePluginKotlinCodeStyle" value="official" default="official" />
+        <preference name="GradlePluginKotlinVersion" value="1.9.20" default="1.9.20" />
+
         <!-- Register Native Plugin Feature in config.xml -->
         <config-file target="res/xml/config.xml" parent="/*">
-            <feature name="Echo">
-                <param name="android-package" value="com.outsystems.plugin.echo.Echo" />
+            <feature name="ClerkPlugin">
+                <param name="android-package" value="com.outsystems.plugin.clerk.ClerkPlugin" />
+                <param name="onload" value="true" />
             </feature>
         </config-file>
 
-        <!-- Java Native Source File Mapping (100% OutSystems MAB compilation guarantee) -->
-        <source-file src="src/android/Echo.java" target-dir="src/com/outsystems/plugin/echo" />
-        <!-- Kotlin Native Source File Mapping -->
-        <source-file src="src/android/Echo.kt" target-dir="src/com/outsystems/plugin/echo" />
+        <!-- Deep Link Redirect Scheme (clerk://...) for Hosted Auth & SSO -->
+        <config-file target="AndroidManifest.xml" parent="/manifest/application/activity[@android:name='MainActivity']">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="clerk" />
+            </intent-filter>
+        </config-file>
+
+        <!-- Source File Mappings -->
+        <source-file src="src/android/ClerkPlugin.java" target-dir="src/com/outsystems/plugin/clerk" />
+        <source-file src="src/android/ClerkBridge.kt" target-dir="src/com/outsystems/plugin/clerk" />
+
+        <!-- OutSystems MAB Gradle Build Extras for Clerk Dependencies & Maven Repositories -->
+        <framework src="src/android/build-extras.gradle" custom="true" type="gradleReference" />
     </platform>
 </plugin>

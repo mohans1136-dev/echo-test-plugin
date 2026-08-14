@@ -1,23 +1,24 @@
 {
-  "name": "echo-test-plugin",
+  "name": "cordova-plugin-clerk",
   "version": "1.0.0",
-  "description": "Cordova Android Echo Plugin written in Kotlin for Cordova and OutSystems Mobile Applications",
+  "description": "Cordova Android Plugin wrapping Clerk SDK with Shared Session Synchronization for OutSystems Mobile Applications",
   "cordova": {
-    "id": "echo-test-plugin",
+    "id": "cordova-plugin-clerk",
     "platforms": [
       "android"
     ]
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/example/echo-test-plugin.git"
+    "url": "https://github.com/mohans1136-dev/echo-test-plugin.git"
   },
   "keywords": [
     "ecosystem:cordova",
     "cordova-android",
-    "kotlin",
-    "outsystems",
-    "echo"
+    "clerk",
+    "authentication",
+    "shared-session",
+    "outsystems"
   ],
   "author": "Luvelo",
   "license": "Apache-2.0"

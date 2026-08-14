@@ -1,5 +1,15 @@
 {
-  "plugin": {
-    "url": "https://github.com/mohans1136-dev/echo-test-plugin#main"
-  }
+    "plugin": {
+        "url": "https://github.com/mohans1136-dev/echo-test-plugin#main",
+        "variables": [
+            {
+                "name": "GRADLEPLUGINKOTLINENABLED",
+                "value": "true" 
+            },
+            {
+                "name": "GRADLEPLUGINKOTLINVERSION",
+                "value": "1.9.20" 
+            }
+        ]
+    }
 }
