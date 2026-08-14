@@ -64,20 +64,21 @@ class ClerkPlugin : CordovaPlugin() {
                 return
             }
 
-            val context = cordova.activity.applicationContext
-            ClerkBridge.initialize(
-                context,
-                publishableKey,
-                object : ClerkBridge.BridgeCallback {
-                    override fun onSuccess(result: JSONObject) {
-                        callbackContext.success(result)
-                    }
+            cordova.activity.runOnUiThread {
+                ClerkBridge.initialize(
+                    cordova.activity.applicationContext,
+                    publishableKey,
+                    object : ClerkBridge.BridgeCallback {
+                        override fun onSuccess(result: JSONObject) {
+                            callbackContext.success(result)
+                        }
 
-                    override fun onError(errorMessage: String) {
-                        callbackContext.error(errorMessage)
+                        override fun onError(errorMessage: String) {
+                            callbackContext.error(errorMessage)
+                        }
                     }
-                }
-            )
+                )
+            }
         } catch (e: Exception) {
             callbackContext.error("Initialize Plugin Error: ${e.localizedMessage}")
         }

@@ -14,8 +14,7 @@ import org.json.JSONObject
 
 /**
  * Kotlin Helper Bridge for Clerk Android SDK.
- * Manages Kotlin Coroutines scopes and converts suspending SDK calls into Java callbacks.
- * Uses lazy scope creation to avoid Main Looper initialization crashes on splash screen launch.
+ * Manages Kotlin Coroutines scopes and converts SDK calls into callbacks.
  */
 object ClerkBridge {
 
@@ -33,32 +32,33 @@ object ClerkBridge {
     private var isInitialized = false
 
     /**
-     * Initializes the Clerk SDK with Shared Session Synchronization enabled.
+     * Initializes the Clerk SDK on the Main Thread with Shared Session Synchronization enabled.
      */
     @JvmStatic
     fun initialize(context: Context, publishableKey: String, callback: BridgeCallback) {
-        scope.launch {
-            try {
-                withContext(Dispatchers.IO) {
-                    val options = ClerkConfigurationOptions(
-                        sharedSessionSync = SharedSessionSyncConfig.enabled
-                    )
-                    Clerk.initialize(
-                        context = context,
-                        publishableKey = publishableKey,
-                        options = options
-                    )
-                }
-                isInitialized = true
-                val response = JSONObject().apply {
-                    put("status", "initialized")
-                    put("sharedSessionEnabled", true)
-                    put("publishableKey", publishableKey)
-                }
-                callback.onSuccess(response)
-            } catch (e: Exception) {
-                callback.onError("Clerk Initialization Error: ${e.localizedMessage}")
+        try {
+            val options = ClerkConfigurationOptions(
+                sharedSessionSync = SharedSessionSyncConfig.enabled
+            )
+            
+            // Clerk.initialize MUST run on the Main UI Thread
+            Clerk.initialize(
+                context = context,
+                publishableKey = publishableKey,
+                options = options
+            )
+
+            isInitialized = true
+
+            val response = JSONObject().apply {
+                put("status", "initialized")
+                put("sharedSessionEnabled", true)
+                put("publishableKey", publishableKey)
             }
+
+            callback.onSuccess(response)
+        } catch (e: Exception) {
+            callback.onError("Clerk Initialization Error: ${e.localizedMessage}")
         }
     }
 
@@ -164,27 +164,32 @@ object ClerkBridge {
     @JvmStatic
     fun getSessionState(callback: BridgeCallback) {
         if (!isInitialized) {
-            callback.onError("Clerk SDK is not initialized.")
+            val response = JSONObject().apply {
+                put("isAuthenticated", false)
+                put("sessionId", "")
+                put("userId", "")
+                put("email", "")
+                put("sharedSessionSynced", false)
+            }
+            callback.onSuccess(response)
             return
         }
 
-        scope.launch {
-            try {
-                val session = Clerk.session
-                val user = Clerk.user
-                val isAuthenticated = session != null && session.isActive
+        try {
+            val session = Clerk.session
+            val user = Clerk.user
+            val isAuthenticated = session != null && session.isActive
 
-                val response = JSONObject().apply {
-                    put("isAuthenticated", isAuthenticated)
-                    put("sessionId", session?.id ?: "")
-                    put("userId", user?.id ?: "")
-                    put("email", user?.primaryEmailAddress?.emailAddress ?: "")
-                    put("sharedSessionSynced", isAuthenticated)
-                }
-                callback.onSuccess(response)
-            } catch (e: Exception) {
-                callback.onError("Session Check Error: ${e.localizedMessage}")
+            val response = JSONObject().apply {
+                put("isAuthenticated", isAuthenticated)
+                put("sessionId", session?.id ?: "")
+                put("userId", user?.id ?: "")
+                put("email", user?.primaryEmailAddress?.emailAddress ?: "")
+                put("sharedSessionSynced", isAuthenticated)
             }
+            callback.onSuccess(response)
+        } catch (e: Exception) {
+            callback.onError("Session Check Error: ${e.localizedMessage}")
         }
     }
 }
