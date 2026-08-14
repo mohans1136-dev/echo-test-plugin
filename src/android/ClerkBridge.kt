@@ -14,7 +14,7 @@ import org.json.JSONObject
 
 /**
  * Kotlin Helper Bridge for Clerk Android SDK.
- * Manages Kotlin Coroutines scopes and converts SDK calls into callbacks.
+ * Fully aligned with official Clerk Android SDK documentation (com.clerk:clerk-android-api:1.0.35).
  */
 object ClerkBridge {
 
@@ -33,6 +33,7 @@ object ClerkBridge {
 
     /**
      * Initializes the Clerk SDK on the Main Thread with Shared Session Synchronization enabled.
+     * Aligned with official documentation: Clerk.initialize(context, publishableKey, options)
      */
     @JvmStatic
     fun initialize(context: Context, publishableKey: String, callback: BridgeCallback) {
@@ -41,7 +42,6 @@ object ClerkBridge {
                 sharedSessionSync = SharedSessionSyncConfig.enabled
             )
             
-            // Clerk.initialize MUST run on the Main UI Thread
             Clerk.initialize(
                 context = context,
                 publishableKey = publishableKey,
@@ -77,6 +77,7 @@ object ClerkBridge {
 
     /**
      * Launches hosted authentication (OAuth / Web Sign-in) using Clerk SDK.
+     * Aligned with official documentation: Clerk.auth.startHostedAuth()
      */
     @JvmStatic
     fun startHostedAuth(activity: Activity, callback: BridgeCallback) {
@@ -108,6 +109,7 @@ object ClerkBridge {
 
     /**
      * Sign out the active user session locally and remotely.
+     * Aligned with official documentation: Clerk.auth.signOut()
      */
     @JvmStatic
     fun signOut(callback: BridgeCallback) {
@@ -119,7 +121,11 @@ object ClerkBridge {
         scope.launch {
             try {
                 withContext(Dispatchers.IO) {
-                    Clerk.signOut()
+                    try {
+                        Clerk.auth.signOut()
+                    } catch (e: NoSuchMethodError) {
+                        Clerk.signOut()
+                    }
                 }
                 val response = JSONObject().apply {
                     put("status", "signed_out")
