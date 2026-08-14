@@ -42,7 +42,7 @@
         </config-file>
 
         <!-- Source File Mappings -->
-        <source-file src="src/android/ClerkPlugin.java" target-dir="src/com/outsystems/plugin/clerk" />
+        <source-file src="src/android/ClerkPlugin.kt" target-dir="src/com/outsystems/plugin/clerk" />
         <source-file src="src/android/ClerkBridge.kt" target-dir="src/com/outsystems/plugin/clerk" />
 
         <!-- OutSystems MAB Gradle Build Extras for Clerk Dependencies & Maven Repositories -->
