@@ -30,8 +30,8 @@
             </feature>
         </config-file>
 
-        <!-- Deep Link Redirect Scheme (clerk://...) for Hosted Auth & SSO -->
-        <config-file target="AndroidManifest.xml" parent="/manifest/application/activity">
+        <!-- Deep Link Redirect Scheme (clerk://...) for Hosted Auth & SSO targeting MainActivity -->
+        <config-file target="AndroidManifest.xml" parent="/manifest/application/activity[@android:name='MainActivity']">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
