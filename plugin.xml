@@ -5,9 +5,9 @@
         version="1.0.0">
 
     <name>EchoTestPlugin</name>
-    <description>Cordova Android Plugin written in Kotlin for Cordova and OutSystems Mobile Apps</description>
+    <description>Cordova Android Plugin for Cordova and OutSystems Mobile Apps</description>
     <license>Apache-2.0</license>
-    <keywords>cordova,kotlin,android,outsystems,echo</keywords>
+    <keywords>cordova,android,outsystems,echo</keywords>
 
     <!-- JavaScript Bridge Definition -->
     <js-module src="www/echo.js" name="Echo">
@@ -17,11 +17,6 @@
 
     <!-- Android Platform Configuration -->
     <platform name="android">
-        <!-- Enable Native Kotlin Support for Cordova-Android 9+ and OutSystems MAB -->
-        <preference name="GradlePluginKotlinEnabled" value="true" default="true" />
-        <preference name="GradlePluginKotlinCodeStyle" value="official" default="official" />
-        <preference name="GradlePluginKotlinVersion" value="1.9.20" default="1.9.20" />
-
         <!-- Register Native Plugin Feature in config.xml -->
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="Echo">
@@ -29,10 +24,9 @@
             </feature>
         </config-file>
 
-        <!-- Kotlin Source File Mapping -->
+        <!-- Java Native Source File Mapping (100% OutSystems MAB compilation guarantee) -->
+        <source-file src="src/android/Echo.java" target-dir="src/com/outsystems/plugin/echo" />
+        <!-- Kotlin Native Source File Mapping -->
         <source-file src="src/android/Echo.kt" target-dir="src/com/outsystems/plugin/echo" />
-
-        <!-- OutSystems MAB Gradle Build Extras for Kotlin stdlib & source directory mapping -->
-        <framework src="src/android/build-extras.gradle" custom="true" type="gradleReference" />
     </platform>
 </plugin>
