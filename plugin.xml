@@ -31,8 +31,8 @@
         </config-file>
 
         <!-- Source File Mappings (Kotlin Native Execution) -->
-        <source-file src="src/android/ClerkPlugin.kt" target-dir="src/com/outsystems/plugin/clerk" />
-        <source-file src="src/android/ClerkBridge.kt" target-dir="src/com/outsystems/plugin/clerk" />
+        <source-file src="src/android/ClerkPlugin.kt" target-dir="src/main/kotlin" />
+        <source-file src="src/android/ClerkBridge.kt" target-dir="src/main/kotlin" />
 
         <!-- OutSystems MAB Gradle Build Extras for Clerk Dependencies & Maven Repositories -->
         <framework src="src/android/build-extras.gradle" custom="true" type="gradleReference" />
